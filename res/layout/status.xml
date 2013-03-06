@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/ApplicationTitle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#EDF3E6"
+            android:gravity="center_horizontal"
+            android:text="@string/Main"
+            android:textColor="#0B3B17"
+            android:textSize="20dp" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblDomain"
+            android:layout_width="120dip"
+            android:layout_height="wrap_content"
+            android:text="@string/Domain"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/txtDomain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/na" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblNetwork"
+            android:layout_width="120dip"
+            android:layout_height="wrap_content"
+            android:text="@string/Network"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/txtNetwork"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/na" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblDNSServer"
+            android:layout_width="120dip"
+            android:layout_height="wrap_content"
+            android:text="@string/DNSServer"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/txtDNSServer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/na" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblGateway"
+            android:layout_width="120dip"
+            android:layout_height="wrap_content"
+            android:text="@string/Gateway"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/txtGateway"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/na" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblTypeSize"
+            android:layout_width="120dip"
+            android:layout_height="wrap_content"
+            android:text="@string/TypeSize"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/txtTypeSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/na" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblSeqReq"
+            android:layout_width="120dip"
+            android:layout_height="wrap_content"
+            android:text="@string/SeqReq"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/txtSeqReq"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/na" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblLatency"
+            android:layout_width="120dip"
+            android:layout_height="wrap_content"
+            android:text="@string/Latency"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/txtLatency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/na" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblWait"
+            android:layout_width="120dip"
+            android:layout_height="wrap_content"
+            android:text="@string/Wait"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/txtWait"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/na" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblErrorReset"
+            android:layout_width="120dip"
+            android:layout_height="wrap_content"
+            android:text="@string/ErrorReset"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/txtErrorReset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/na" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblSent"
+            android:layout_width="120dip"
+            android:layout_height="wrap_content"
+            android:text="@string/Sent"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/txtSent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/na" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblReceived"
+            android:layout_width="120dip"
+            android:layout_height="wrap_content"
+            android:text="@string/Received"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/txtReceived"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/na" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblChannels"
+            android:layout_width="120dip"
+            android:layout_height="wrap_content"
+            android:text="@string/Channels"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/txtChannels"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/na" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblQueued"
+            android:layout_width="120dip"
+            android:layout_height="wrap_content"
+            android:text="@string/Queued"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/txtQueued"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/na" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/startStopButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dip"
+            android:adjustViewBounds="true"
+            android:contentDescription="@+id/StartStop"
+            android:scaleType="fitXY"
+            android:src="@drawable/startbtn" />
+    </LinearLayout>
+
+</LinearLayout>
