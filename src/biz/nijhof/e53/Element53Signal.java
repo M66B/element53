@@ -23,6 +23,7 @@ public class Element53Signal {
 	public static final int RESULT_STOPPED = 11;
 	public static final int RESULT_TRIALOVER = 12;
 
+
 	public Element53Signal(Context context) {
 		_context = context;
 	}

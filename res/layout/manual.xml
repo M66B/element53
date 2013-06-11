@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-
+	
     <TextView
         android:id="@+id/Manual2"
         android:layout_width="fill_parent"
@@ -12,12 +12,14 @@
         android:gravity="center_horizontal"
         android:text="@string/Manual"
         android:textColor="#0B3B17"
-        android:textSize="20dp" />
-
-    <TextView
+        android:textSize="20sp" />
+    
+    
+     <TextView
         android:id="@+id/txtManual"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical"
+        />
 
 </LinearLayout>

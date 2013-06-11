@@ -9,6 +9,8 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import biz.nijhof.e53.R;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -34,6 +36,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+
 public class Element53Activity extends Activity {
 	private TextView _txtDomain;
 	private TextView _txtNetwork;
@@ -51,7 +55,8 @@ public class Element53Activity extends Activity {
 	private TextView _txtLog;
 	private TextView _txtManual;
 	private ImageView _btnStartStop;
-
+	private TextView _txtTotal;
+	
 	private List<View> _lstViews;
 	private ViewPager _viewPager;
 
@@ -76,7 +81,7 @@ public class Element53Activity extends Activity {
 		public void onServiceDisconnected(ComponentName className) {
 			_boundService = null;
 		}
-	};
+	};	
 
 	@Override
 	protected void onDestroy() {
@@ -123,9 +128,11 @@ public class Element53Activity extends Activity {
 				float rx = (data.getIntExtra("Received", -1) / 10) / 100f;
 				float ttx = (data.getIntExtra("TotalSent", -1) / 10) / 100f;
 				float trx = (data.getIntExtra("TotalReceived", -1) / 10) / 100f;
+				float tt = (data.getIntExtra("Total", -1) / 10) / 100f;
 
 				_txtSent.setText(String.format("%.2f kBps / %.2f kB", tx, ttx));
 				_txtReceived.setText(String.format("%.2f kBps / %.2f kB", rx, trx));
+				_txtTotal.setText(String.format("%.2f kB",tt));
 				_txtChannels.setText(String.format("%d / %d", data.getIntExtra("TXChan", -1), data.getIntExtra("RXChan", -1)));
 				_txtQueued.setText(String.format("%d / %d", data.getIntExtra("TXQueue", -1), data.getIntExtra("RXQueue", -1)));
 
@@ -166,12 +173,13 @@ public class Element53Activity extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Main layout
 		setContentView(R.layout.main);
-
+		
 		// Adding views to view pager
 		_lstViews = new ArrayList<View>();
 		_lstViews.add(View.inflate(getApplicationContext(), R.layout.manual, null));
@@ -182,7 +190,14 @@ public class Element53Activity extends Activity {
 		_viewPager = (ViewPager) findViewById(R.id.element53Pager);
 		_viewPager.setAdapter(new Element53PagerAdapter(_lstViews));
 		_viewPager.setCurrentItem(1);
-
+		
+		
+		
+		SimpleViewPagerIndicator pageIndicator = (SimpleViewPagerIndicator) findViewById(R.id.page_indicator);
+		pageIndicator.setViewPager(_viewPager);
+		
+		pageIndicator.notifyDataSetChanged();		
+		
 		// Setup controls
 		View manualView = _lstViews.get(0);
 		View statusView = _lstViews.get(1);
@@ -191,6 +206,7 @@ public class Element53Activity extends Activity {
 		_txtNetwork = (TextView) statusView.findViewById(R.id.txtNetwork);
 		_txtDNSServer = (TextView) statusView.findViewById(R.id.txtDNSServer);
 		_txtGateway = (TextView) statusView.findViewById(R.id.txtGateway);
+		
 		_txtTypeSize = (TextView) statusView.findViewById(R.id.txtTypeSize);
 		_txtSeqReq = (TextView) statusView.findViewById(R.id.txtSeqReq);
 		_txtWait = (TextView) statusView.findViewById(R.id.txtWait);
@@ -198,6 +214,7 @@ public class Element53Activity extends Activity {
 		_txtErrorReset = (TextView) statusView.findViewById(R.id.txtErrorReset);
 		_txtSent = (TextView) statusView.findViewById(R.id.txtSent);
 		_txtReceived = (TextView) statusView.findViewById(R.id.txtReceived);
+		_txtTotal = (TextView) statusView.findViewById(R.id.txtTotal);
 		_txtQueued = (TextView) statusView.findViewById(R.id.txtQueued);
 		_txtChannels = (TextView) statusView.findViewById(R.id.txtChannels);
 		_txtLog = (TextView) logView.findViewById(R.id.txtLog);
@@ -230,6 +247,7 @@ public class Element53Activity extends Activity {
 					_txtSent.setText(R.string.na);
 					_txtReceived.setText(R.string.na);
 					_txtQueued.setText(R.string.na);
+					_txtTotal.setText(R.string.na);
 					_txtChannels.setText(R.string.na);
 					_txtLog.setText("");
 					_txtLog.scrollTo(0, 0);
@@ -269,11 +287,13 @@ public class Element53Activity extends Activity {
 		// Attach to service
 		bindService(new Intent(Element53Activity.this, Element53Service.class), mConnection, Context.BIND_AUTO_CREATE);
 		_isBound = true;
-
+		
 		// Check ProxyDroid
-		checkProxyDroid();
-	}
+		checkProxyDroid();  
 
+	}
+	
+	
 	// Wire options menu
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -314,10 +334,19 @@ public class Element53Activity extends Activity {
 				}
 			});
 			aboutDialog.create().show();
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
+				return true;
+			case R.id.menuMain:
+					_viewPager.setCurrentItem(1);
+					return true;
+			case R.id.menuLog:
+					_viewPager.setCurrentItem(2);
+					return true;			
+			case R.id.menuManual:
+					_viewPager.setCurrentItem(0);
+					return true;
+			default:
+				return super.onOptionsItemSelected(item);
+			}
 	}
 
 	// Handle back button

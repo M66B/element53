@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >	
     <item
         android:id="@+id/menuSettings"
         android:title="@string/Settings"/>
@@ -9,6 +8,14 @@
         android:title="@string/Clear"/>
     <item
         android:id="@+id/menuAbout"
-        android:title="@string/About"/>
-
+        android:title="@string/About"/> 
+     <item
+        android:id="@+id/menuMain"
+        android:title="@string/Main"/>   
+     <item
+        android:id="@+id/menuLog"
+        android:title="@string/Logging"/>      
+     <item
+        android:id="@+id/menuManual"
+        android:title="@string/Manual"/>
 </menu>
