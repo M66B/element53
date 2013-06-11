@@ -1,6 +1,9 @@
+console.log('Element53 is started');
 var modpath = '/usr/local/lib/node_modules/';
 
-//require(modpath + 'nodetime').profile();
+process.on('uncaughtException', function (err) {
+  console.log(err.stack);
+});
 
 var sys = require('util'),
 	Buffer = require('buffer').Buffer,
@@ -59,8 +62,6 @@ var _debug = {}; // [client]
 
 // Constants
 
-var MONGO_LOG = 0;
-
 var PROTOCOL_VERSION = 1;
 
 var OOB_RESET = 1;
@@ -88,7 +89,7 @@ Object.size = function(obj) {
 };
 
 var eLog = function(msg) {
-  	console.log(new Date() + ' ' + msg);
+  	//console.log(new Date() + ' ' + msg);
 };
 
 var sliceBits = function(b, off, len) {
@@ -350,8 +351,10 @@ var handleReset = function(rmsg) {
 	if (!(clientid in _id))
 		_id[clientid] = getFreeClient();
 	rmsg.client = _id[clientid];
-	_clientid[rmsg.client] = clientid;
-
+	_clientid[rmsg.client] = clientid;	
+	
+	
+	
 	// Reset sequence
 	_seq[rmsg.client] = 0;
 
@@ -388,48 +391,6 @@ var handleReset = function(rmsg) {
 	_queue[rmsg.client] = new Array();
 	_lastactivity[rmsg.client] = new Date();
 	_laststatus[rmsg.client] = new Date();
-
-	// Register client
-	if (MONGO_LOG)
-		try {
-			var server = new mongo.Server('localhost', 27017, { auto_reconnect: true });
-			var db = new mongo.Db('element53', server);
-			db.open(function(err, db) {
-				if (err)
-					eLog('Mongo DB open (reset) error=' + err);
-				else {
-					db.createCollection('client', function(err, collection) {
-						if (err)
-							eLog('Mongo DB create (reset) error=' + err);
-						else {
-							var document = {
-								clientid: clientid,
-								protocol: protocol,
-								servermsgsize: servermsgsize,
-								clientmsgsize: clientmsgsize,
-								recordtype: recordtype,
-								nocrc: nocrc,
-								debug: debug,
-								istrial: istrial,
-								time: new Date()
-							};
-							collection.update(
-								{ clientid: clientid },
-								document,
-								{ upsert: true, multi: false },
-								function(err) {
-									eLog('Upserted client (size) id=' + clientid + ' err=' + err);
-								}
-							);
-						}
-					});
-					db.close();
-				}
-			});
-		}
-		catch (e) {
-			eLog('Error upserting: ' + e.message);
-		}
 
 	// Build response
 	var data = new Buffer(1);
@@ -480,45 +441,47 @@ var handleProbeServer = function(rmsg) {
 var handleSetSize = function(rmsg) {
 	var servermsgsize = rmsg.data[0] * 256 + rmsg.data[1];
 	var clientmsgsize = rmsg.data[2] * 256 + rmsg.data[3];
+	
+	
+	
 	_msgsize[rmsg.client] = servermsgsize;
 	eLog('Set size client=' + rmsg.client + ' server=' + servermsgsize + ' client=' + clientmsgsize);
 
 	// Register size
-	if (MONGO_LOG)
-		try {
-			var server = new mongo.Server('localhost', 27017, { auto_reconnect: true });
-			var db = new mongo.Db('element53', server);
-			db.open(function(err, db) {
-				if (err)
-					eLog('Mongo DB open (size) error=' + err);
-				else {
-					db.createCollection('client', function(err, collection) {
-						if (err)
-							eLog('Mongo DB create (size) error=' + err);
-						else {
-							var document = {
-								clientid: _clientid[rmsg.client],
-								servermsgsize: servermsgsize,
-								clientmsgsize: clientmsgsize,
-								time: new Date()
-							};
-							collection.update(
-								{ clientid: _clientid[rmsg.client] },
-								{ $set : document },
-								{ upsert: true, multi: false },
-								function(err) {
-									eLog('Upserted client (size) id=' + rmsg.client + ' err=' + err);
-								}
-							);
-						}
-					});
-					db.close();
-				}
-			});
-		}
-		catch (e) {
-			eLog('Error upserting: ' + e.message);
-		}
+	// try {
+		// var server = new mongo.Server('localhost', 27017, { auto_reconnect: true });
+		// var db = new mongo.Db('element53', server);
+		// db.open(function(err, db) {
+			// if (err)
+				// eLog('Mongo DB open (size) error=' + err);
+			// else {
+				// db.createCollection('client', function(err, collection) {
+					// if (err)
+						// eLog('Mongo DB create (size) error=' + err);
+					// else {
+						// var document = {
+							// clientid: _clientid[rmsg.client],
+							// servermsgsize: servermsgsize,
+							// clientmsgsize: clientmsgsize,
+							// time: new Date()
+						// };
+						// collection.update(
+							// { clientid: _clientid[rmsg.client] },
+							// { $set : document },
+							// { upsert: true, multi: false },
+							// function(err) {
+								// eLog('Upserted client (size) id=' + rmsg.client + ' err=' + err);
+							// }
+						// );
+					// }
+				// });
+				// db.close();
+			// }
+		// });
+	// }
+	// catch (e) {
+		// eLog('Error upserting: ' + e.message);
+	// }
 
 	// Send response
 	var data = new Buffer(0);
@@ -532,7 +495,7 @@ var getFreeClient = function() {
 			var delta = new Date().getTime() - _lastactivity[client].getTime();
 			eLog('Client=' + client + ' inactive ' + delta + ' ms');
 			if (delta >= config.max_client_inactive_ms) {
-				eLog('Delete client=' + client);
+				console.log('Delete client=' + client);
 
 				// Close channels
 				for (var channel in _socket[client])
@@ -546,9 +509,9 @@ var getFreeClient = function() {
 				delete _lastmsg[client];
 				delete _clientclose[client];
 				delete _lastactivity[client];
-				delete _laststatus [client];
+				delete _laststatus[client];
+				delete _debug[client];
 				delete _nocrc[client];
-				delete _debug [client];
 			}
 		}
 
@@ -629,7 +592,15 @@ server.on('message', function (smsg, rinfo) {
 			}
 
 			// Quit
-			else if (rmsg.control == OOB_QUIT) {
+			else if (rmsg.control == OOB_QUIT) {				
+				//Log query (client quit)
+				//connection.connect();
+				//connection.query('INSERT INTO Log SET ?', {UserId: _clientid[rmsg.client], Actie: 'Quit'}, function(err, result) {
+				//  if (err) throw err;
+				//  console.log(result.insertId);
+				//});
+				//connection.end();
+				
 				var message = handleQuit(rmsg);
 				sendMessage(rinfo, query, message);
 			}
@@ -706,15 +677,19 @@ server.on('message', function (smsg, rinfo) {
 
 					// Socket close
 					_socket[rmsg.client][rmsg.channel].on('close', function() {
-						if (_clientclose[rmsg.client][rmsg.channel])
-							eLog('Socket closed by client client=' + rmsg.client + ' channel=' + rmsg.channel)
-						else {
-							eLog('Socket closed by server client=' + rmsg.client + ' channel=' + rmsg.channel)
-							var msg = { channel: rmsg.channel, control: CONTROL_CLOSE, data: new Buffer(0) };
-							_queue[rmsg.client].push(msg);
+						
+						if(typeof _clientclose[rmsg.client] !== 'undefined')
+						{					
+							if (_clientclose[rmsg.client][rmsg.channel])
+								eLog('Socket closed by client client=' + rmsg.client + ' channel=' + rmsg.channel)
+							else {
+								eLog('Socket closed by server client=' + rmsg.client + ' channel=' + rmsg.channel)
+								var msg = { channel: rmsg.channel, control: CONTROL_CLOSE, data: new Buffer(0) };
+								_queue[rmsg.client].push(msg);
+							}		
+							delete _socket[rmsg.client][rmsg.channel];
+							delete _clientclose[rmsg.client][rmsg.channel];							
 						}
-						delete _socket[rmsg.client][rmsg.channel];
-						delete _clientclose[rmsg.client][rmsg.channel];
 					});
 
 					// Sokcet error
@@ -768,6 +743,7 @@ server.on('message', function (smsg, rinfo) {
 
 			// Send response
 			sendMessage(rinfo, query, message);
+						
 			_lastactivity[rmsg.client] = new Date();
 
 			// Cleanup
@@ -775,6 +751,7 @@ server.on('message', function (smsg, rinfo) {
 			delete rmsg;
 			delete message;
 		}
+		//global.gc();
 	}
 	catch (e) {
 		if (rmsg == null || rmsg.seq != 0 || !(rmsg.control == OOB_PROBE_CLIENT || rmsg.control == OOB_PROBE_SERVER))
@@ -797,7 +774,7 @@ server.on('message', function (smsg, rinfo) {
 });
 
 server.addListener('error', function (ex) {
-	eLog('Server error: ' + ex.message);
+	console.log('Server error: ' + ex.message);
 });
 
 server.bind(config.port);

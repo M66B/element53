@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Element53</string>
+    <string name="app_name">Element53 Pro</string>
     <string name="set_preferences">Preferences</string>
     <string name="Domain">Domain:</string>
     <string name="Network">Network:</string>
@@ -15,6 +15,7 @@
     <string name="ErrorReset">Errors/resets:</string>
     <string name="Sent">Sent:</string>
     <string name="Received">Received:</string>
+    <string name="Total">Total (since installation):</string>
     <string name="Channels">Channels:</string>
     <string name="Queued">Queued:</string>
     <string name="na">n/a</string>
@@ -25,14 +26,16 @@
     <string name="Manual">Manual</string>
     <string name="Settings">Settings</string>
     <string name="About">About</string>
-    <string name="Version" formatted="false">Version %s (%d)\nCopyright © 2012 M. Bokhorst</string>
+    <string name="Version" formatted="false">Version %s (%d)\nCopyright © 2012 S. Nijhof</string>
     <string name="Quit">Quit?</string>
     <string name="Running">Running</string>
     <string name="Speed" formatted="false">up: %.2f kBps - down: %.2f kBps</string>
-    <string name="Description" formatted="false">Element53 is a ready to use DNS-tunnel. It can be used for penetration testing (other uses are not supported).
+    <string name="Description" formatted="false">Element53 is a ready-to-use DNS-tunnel for Android. It can be used for penetration testing (other uses are not supported).
 
-Element53 creates a TCP-tunnel to a proxy server. The client side of the tunnel is localhost:3128. You can use ProxyDroid to connect to the proxy.
+Element53 creates a TCP-tunnel to a SOCKS proxy server. The client side of the tunnel is localhost:3128. For your convenience the server part is provided.
 
-You can try the lite version for 15 minutes.</string>
+If you have rooted your device (this is no requirement) you can install ProxyDroid and route all internet traffic into the tunnel.
+
+If you encounter a bug a problem, please contact the developer before leaving a bad rating or review.</string>
 
 </resources>

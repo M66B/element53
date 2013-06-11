@@ -12,7 +12,7 @@ import java.util.Random;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Base64;
+
 import biz.nijhof.e53.Base32.DecodingException;
 
 public class Element53DNS {

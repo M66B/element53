@@ -27,11 +27,12 @@ import java.util.concurrent.TimeoutException;
 import com.stericson.RootTools.RootTools;
 import com.stericson.RootTools.RootToolsException;
 
+import biz.nijhof.e53.Preferences;
+import biz.nijhof.e53.R;
 import biz.nijhof.e53.Base32.DecodingException;
 import biz.nijhof.e53.Element53DNS.DNSRecord;
 import biz.nijhof.e53.Element53DNS.DNSResult;
 import biz.nijhof.e53.Element53DNS.E53DNSException;
-import biz.nijhof.e53.Preferences;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -111,7 +112,7 @@ public class Element53Service extends Service {
 
 	// Pro/lit
 	private boolean _isTrial = false;
-	private static final int MAXTRIALBYTES = 10 * 1024 * 1024; // 10 Megabytes
+	private static final int MAXTRIALBYTES = 1024 * 1024 * 10; // 10 Megabytes
 
 	private class Msg {
 		public int Client;
@@ -426,8 +427,6 @@ public class Element53Service extends Service {
 								break;
 							} catch (Exception ex) {
 								_signal.UILog(String.format("Reset: %s retry=%d", ex, retry));
-								if (_debug)
-									ex.printStackTrace();
 								if (retry <= _maxresends) {
 									if (!ex.getClass().equals(SocketTimeoutException.class))
 										Thread.sleep(_errorwait);
@@ -817,13 +816,15 @@ public class Element53Service extends Service {
 			Process proc = Runtime.getRuntime().exec("getprop net.dns1");
 			_dnsServer = new BufferedReader(new InputStreamReader(proc.getInputStream())).readLine();
 			_checkconnection = false;
-		} else {
+		}
+
+		else {
 			// Check if network connected/available
 			NetworkInfo nwInfo = null;
 			if (_networkType.equals("Wifi"))
 				nwInfo = _connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 			else if (_networkType.equals("Mobile"))
-				nwInfo = _connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+				nwInfo = _connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);			
 			else
 				throw new E53Exception(String.format("Unknown network type: %s", _networkType));
 			if (nwInfo == null || !nwInfo.isConnected())
@@ -863,7 +864,7 @@ public class Element53Service extends Service {
 				gateway = null;
 
 				if (_networkType.equals("Mobile"))
-					networkInfo = _connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+					networkInfo = _connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);				
 				name = String.format("%s %s", networkInfo.getTypeName(), networkInfo.getSubtypeName());
 			}
 
@@ -929,15 +930,29 @@ public class Element53Service extends Service {
 						_signal.UILog(line);
 			}
 	}
+	
+	public int getTotalBytes()
+	{
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		int totalBytes = (sharedPreferences.contains("TotalBytes") ? sharedPreferences.getInt("TotalBytes", 0) : 0);
+		return totalBytes;
+	}
 
 	public boolean checkTrialLimit(int bytesToAdd) {
-		if (_isTrial) {
-			SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-			int trialTotalBytes = (sharedPreferences.contains("E53TotalBytes") ? sharedPreferences.getInt("E53TotalBytes", 0) : 0);
-			trialTotalBytes += bytesToAdd;
-			SharedPreferences.Editor editor = sharedPreferences.edit();
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		int trialTotalBytes = (sharedPreferences.contains("E53TotalBytes") ? sharedPreferences.getInt("E53TotalBytes", 0) : 0);
+		int totalBytes = (sharedPreferences.contains("TotalBytes") ? sharedPreferences.getInt("TotalBytes", 0) : 0);
+		
+		totalBytes += bytesToAdd;
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putInt("TotalBytes", totalBytes);
+		editor.commit();		
+		
+		if (_isTrial) {			
+			trialTotalBytes += bytesToAdd;			
 			editor.putInt("E53TotalBytes", trialTotalBytes);
 			editor.commit();
+			Log.v("Total data", Integer.toString(trialTotalBytes));
 			return (trialTotalBytes < MAXTRIALBYTES);
 		}
 		return true;
@@ -972,6 +987,7 @@ public class Element53Service extends Service {
 				intent.putExtra("Received", bytesReceived);
 				intent.putExtra("TotalSent", totalBytesSent);
 				intent.putExtra("TotalReceived", totalBytesReceived);
+				intent.putExtra("Total", getTotalBytes());
 				intent.putExtra("TXChan", _mapChannelSocket.size());
 				intent.putExtra("RXChan", _rxchan);
 				intent.putExtra("TXQueue", _queue.size());
@@ -991,15 +1007,20 @@ public class Element53Service extends Service {
 			E53DNSException {
 		// This leads to data loss :-(
 		closeAllChannels();
-
 		// Get unique ID
-		String android_id = Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
-		if (android_id == null || android_id.equals(""))
-			android_id = _wifiManager.getConnectionInfo().getMacAddress();
-		if (android_id == null && Build.PRODUCT.contains("sdk"))
-			android_id = "SDK";
-		byte[] id = android_id.getBytes("US-ASCII");
+		String android_id = "";
+		if (Build.PRODUCT.contains("sdk"))
+		{
+			android_id = "sdk";
+		}
+		else{
+			android_id = Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
+		}
 
+		if (android_id == null || android_id.equals(""))			
+			android_id = _wifiManager.getConnectionInfo().getMacAddress();
+		byte[] id = android_id.getBytes("US-ASCII");
+		
 		// Build reset OOB data
 		byte[] data = new byte[16 + id.length];
 		data[0] = PROTOCOL_VERSION;
@@ -1023,10 +1044,13 @@ public class Element53Service extends Service {
 		// Send OOB reset
 		_signal.UILog(String.format("Reset %s", android_id));
 		Msg response = sendOOB(dgs, dnsAddress, Msg.OOB_RESET, data);
+		Log.v("Test", "2");
 		byte protocol = response.Data[0];
 		if (protocol > PROTOCOL_VERSION)
 			throw new E53Exception(String.format("Unsupported protocol version %d, please update", protocol));
+		Log.v("Test", "3");
 		_client = response.Client;
+		Log.v("Test", "4");
 		_signal.UILog(String.format("Protocol %d client %d", protocol, _client));
 	}
 

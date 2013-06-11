@@ -1,5 +1,6 @@
 package biz.nijhof.e53;
 
+import biz.nijhof.e53.R;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
